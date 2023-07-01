@@ -1,2 +1,2 @@
-export { useFetcher } from './useFetcher'
+export { useAuthFetcher } from './useAuthFetcher'
 export { useUser } from './useUser'

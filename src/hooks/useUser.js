@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useFetcher } from './useFetcher'
+import { useAuthFetcher } from './useAuthFetcher'
 
 /**
  * @typedef {Object} User
@@ -12,7 +12,7 @@ import { useFetcher } from './useFetcher'
 
 /** @type {() => ({ data: User | null; loading: boolean; error: Error | null })} */
 export function useUser() {
-  const { data, loading, error, fetcher, destructor } = useFetcher()
+  const { data, loading, error, fetcher, destructor } = useAuthFetcher()
   useEffect(() => {
     fetcher('/api/user', { method: 'GET' })
     return destructor
