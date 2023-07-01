@@ -1,25 +1,39 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
-import { AuthorizationError } from '../errors'
+import { useCallback, useState, useRef } from 'react'
 import { useTokenContext } from '../contexts'
 import { Fetcher } from '../utils'
 
 /**
- * @typedef {Object} Fetcher
+ * @param {Response} response 
+ * @returns {Promise<*>}
+ */
+function resolveContent(response) {
+  if (response.headers.get('Content-Type').includes('application/json')) {
+    return response.json()
+  }
+  return response.text()
+}
+
+/**
+ * @typedef {Object} Send
+ * @property {Promise<*>} promise
+ * @property {() => void} destructor
+ */
+/**
+ * @typedef {Object} AuthFetcher
  * @property {unknown} data
  * @property {boolean} loading
  * @property {Error | null} error
- * @property {typeof fetch} fetcher
- * @property {() => void} destructor
+ * @property {(url: string, options: RequestInit) => Send} send
  */
-/** @type {() => Fetcher} */
+/** @type {() => AuthFetcher} */
 export function useAuthFetcher() {
   const { token, addRefreshQueue, onRefreshToken } = useTokenContext()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  let ignore = false
-  const destructor = () => (ignore = true)
   const send = useCallback((url, { headers, ...options }) => {
+    let ignore = false
+    const destructor = () => (ignore = true)
     setLoading(true)
     const $headers = new Headers(headers)
     $headers.set('Content-Type', 'application/json')
@@ -29,25 +43,32 @@ export function useAuthFetcher() {
       url,
       headers: $headers,
     })
-    fetcher
+    const promise = fetcher
       .send()
       .then(([request, response]) => {
-        switch (res.status) {
+        switch (response.status) {
           case 401:
             return new Promise((resolve, reject) => {
               addRefreshQueue({ request, resolve, reject })
               onRefreshToken()
             })
           default:
-            return response.json()
+            return resolveContent(response).then((dto) => {
+              if (ignore) throw new Error('ignore')
+              setData(dto.data)
+              return response
+            })
         }
       })
-      .then((res) => {
+      .catch((error) => {
         if (ignore) return
-        setData(res)
+        setError(error)
       })
-      .catch(setError)
       .finally(() => setLoading(false))
-  }, [fetcher])
-  return { data, loading, error, send, destructor }
+    return {
+      promise,
+      destructor,
+    }
+  }, [token])
+  return { data, loading, error, send }
 }

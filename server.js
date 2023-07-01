@@ -69,13 +69,31 @@ app.post('/login', async (req, res) => {
   })
 })
 
-app.get('/logout', async (req, res) => {
+app.post('/logout', async (req, res) => {
   const { authorization } = req.headers
   const tokens = await getTokens()
   delete tokens[authorization]
   await setTokens(tokens)
   res.send({
     code: 0,
+  })
+})
+
+app.get('/refresh-token', async (req, res) => {
+  const { authorization } = req.headers
+  const tokens = await getTokens()
+  const username = tokens[authorization]
+  if (!username) {
+    res.status(401).send('沒有權限')
+    return
+  }
+  delete tokens[authorization]
+  const token = uuid()
+  tokens[token] = username
+  await setTokens(tokens)
+  res.send({
+    code: 0,
+    data: token
   })
 })
 

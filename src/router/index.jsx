@@ -1,33 +1,46 @@
+import { Suspense, lazy, createElement } from 'react'
 import { createBrowserRouter } from "react-router-dom";
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
+function Loading() {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center" dangerouslySetInnerHTML={{
+      __html: `
+        <svg class="animate-spin h-10 w-10 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>`
+      }}>
+    </div>
+  )
+}
+
+const PageSuspense = ({ loader, fallback = <Loading /> }) => {
+  return (
+    <Suspense fallback={fallback}>
+      {createElement(lazy(loader))}
+    </Suspense>
+  )
+}
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <>
-        <div>
-          <a href="https://vitejs.dev" target="_blank">
-            <img src={viteLogo} className="logo" alt="Vite logo" />
-          </a>
-          <a href="https://react.dev" target="_blank">
-            <img src={reactLogo} className="logo react" alt="React logo" />
-          </a>
-        </div>
-        <h1>Vite + React</h1>
-        <div className="card">
-          <button onClick={() => setCount((count) => count + 1)}>
-            count is {count}
-          </button>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test HMR
-          </p>
-        </div>
-        <p className="read-the-docs">
-          Click on the Vite and React logos to learn more
-        </p>
-      </>
+      <PageSuspense loader={() => import('../router/Layout.jsx')} />
+    ),
+    children: [
+      {
+        path: "welcome",
+        element: (
+          <PageSuspense loader={() => import('../pages/Welcome.jsx')} />
+        ),
+      }
+    ]
+  },
+  {
+    path: "/login",
+    element: (
+      <PageSuspense loader={() => import('../pages/Login.jsx')} />
     ),
   }
 ]);

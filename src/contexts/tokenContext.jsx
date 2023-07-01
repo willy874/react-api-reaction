@@ -1,4 +1,4 @@
-import { useCallback, useState, createContext, useContext, useMemo, useState } from 'react'
+import { useCallback, useState, createContext, useContext, useMemo } from 'react'
 import { useStorageContext } from './storageContext'
 
 /**
@@ -10,10 +10,13 @@ import { useStorageContext } from './storageContext'
 
 const defaultTokenContext = {
   token: '',
+  isLogin: false,
   /** @type {React.Dispatch<React.SetStateAction<string>>} */
   setToken: () => {},
   /** @type {(params: { username: string; password: string; }) => Promise<void>} */
-  onLogin: () => {},
+  fetchLogin: () => {},
+  /** @type {() => Promise<void>} */
+  fetchLogout: () => {},
   /** @type {() => Promise<string>} */
   onRefreshToken: () => {},
   /** @type {RefreshRequest[]} */
@@ -35,16 +38,26 @@ export function TokenContextProvider({ children }) {
   const addRefreshQueue = useCallback((request) => {
     refreshQueue.push(request)
   }, [])
-  const onLogin = useCallback((username, password) => {
-    fetch('/api/login', {
+  const fetchLogin = useCallback(({ username, password }) => {
+    return fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
     })
       .then((res) => res.json())
       .then((json) => {
-        setToken(json.data)
         storage.setItem('token', json.data)
+      })
+  }, [])
+  const fetchLogout = useCallback(() => {
+    return fetch('/api/logout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        storage.removeItem('token')
+        return json
       })
   }, [])
   const onRefreshToken = useCallback((req) => {
@@ -71,6 +84,13 @@ export function TokenContextProvider({ children }) {
     fetchRefreshToken()
   }, [token])
   /** @type {typeof defaultTokenContext} */
-  const value = useMemo(() => ({ token, onLogin, onRefreshToken, addRefreshQueue }), [token, onRefreshToken])
+  const value = useMemo(() => ({
+    token,
+    isLogin: !!token,
+    fetchLogin,
+    fetchLogout,
+    onRefreshToken,
+    addRefreshQueue
+  }), [token, onRefreshToken])
   return <TokenContext.Provider value={value}>{children}</TokenContext.Provider>
 }

@@ -12,9 +12,9 @@ import { useAuthFetcher } from './useAuthFetcher'
 
 /** @type {() => ({ data: User | null; loading: boolean; error: Error | null })} */
 export function useUser() {
-  const { data, loading, error, fetcher, destructor } = useAuthFetcher()
+  const { data, loading, error, send } = useAuthFetcher()
   useEffect(() => {
-    fetcher('/api/user', { method: 'GET' })
+    const { destructor } = send('/api/user', { method: 'GET' })
     return destructor
   }, [])
   return { data, loading, error }

@@ -83,7 +83,8 @@ export class Fetcher {
    */
   send(options = {}) {
     return new Promise((resolve, reject) => {
-      const req = new Request(Object.assign({}, this.options, options))
+      const { url, ...rest } = Object.assign({}, this.options, options)
+      const req = new Request(url, rest)
       try {
         return fetch(req).then((res) => resolve([req, res]))
       } catch (error) {
