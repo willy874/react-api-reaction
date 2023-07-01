@@ -11,34 +11,32 @@ export default function LoginPage () {
   const [password, setPassword] = useState('password')
   const navigate = useNavigate()
   const onLogin = () => {
-    fetchLogin({ username, password }).then(() => {
-      navigate('/')
-    })
+    const fullback = searchParams.get('fullback') || '/'
+    fetchLogin({ username, password }).then(() => navigate(fullback))
   }
   useEffect(() => {
-    const fullback = searchParams.get('fullback') || '/'
-    if (isLogin) navigate(fullback, { replace: true })
+    if (isLogin) navigate('/', { replace: true })
   }, [isLogin])
   return (
-    <div className="w-full h-full flex items-center justify-center">
-      <div className="w-96 border rounded-md p-4">
-        <div className="flex justify-center items-center py-4">
+    <div className="flex items-center justify-center w-full h-full">
+      <div className="p-4 border rounded-md w-96">
+        <div className="flex items-center justify-center py-4">
           <img src={viteLogo} className="h-12 mx-4" />
           <div className="text-4xl">+</div>
-          <img src={reactLogo} className="h-12 animate-spin mx-4" style={{ animationDuration: '10s' }} />
+          <img src={reactLogo} className="h-12 mx-4 animate-spin" style={{ animationDuration: '10s' }} />
         </div>
         <div className="py-3">
-          <div className="mb-4 flex">
+          <div className="flex mb-4">
             <label className="w-24" htmlFor="username">Username</label>
-            <input className="grow rounded px-2" type="text" id="username" value={username} onInput={(e) => setUsername(e.target.value)} />
+            <input className="px-2 rounded grow" type="text" id="username" value={username} onInput={(e) => setUsername(e.currentTarget.value)} />
           </div>
-          <div className="mb-4 flex">
+          <div className="flex mb-4">
             <label className="inline-block w-24" htmlFor="password">Password</label>
-            <input className="grow rounded px-2"  type="password" id="password" value={password} onInput={(e) => setPassword(e.target.value)} />
+            <input className="px-2 rounded grow"  type="password" id="password" value={password} onInput={(e) => setPassword(e.currentTarget.value)} />
           </div>
         </div>
         <div className="text-center">
-          <button onClick={onLogin}>Login</button>
+          <button className="px-4 py-2 border rounded-lg cursor-pointer border-zinc-500 hover:bg-sky-600" onClick={onLogin}>Login</button>
         </div>
       </div>
     </div>

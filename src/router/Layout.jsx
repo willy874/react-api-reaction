@@ -14,7 +14,7 @@ function Header() {
     <header className="flex">
       <div className="grow"></div>
       <div className="px-4 py-2">
-        <button onClick={onLogout}>Logout</button>
+        <button className="border rounded-lg py-2 px-4 border-zinc-500 cursor-pointer hover:bg-sky-600" onClick={onLogout}>Logout</button>
       </div>
     </header>
   );

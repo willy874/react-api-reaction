@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import reactLogo from '../assets/react.svg'
 import viteLogo from '/vite.svg'
 
 export default function WelcomePage() {
+  const navigate = useNavigate()
   return (
     <div className="w-full h-full flex items-center justify-center">
       <div>
@@ -24,6 +26,9 @@ export default function WelcomePage() {
           <p>
             Click on the Vite and React logos to learn more
           </p>
+          <div className="py-4">
+            <button className="border rounded-lg py-2 px-4 border-zinc-500 cursor-pointer hover:bg-sky-600" onClick={() => navigate('/todo')}>Todo Start</button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,20 +1,8 @@
 import { Suspense, lazy, createElement } from 'react'
 import { createBrowserRouter } from "react-router-dom";
+import Spin from "../components/Spin";
 
-function Loading() {
-  return (
-    <div className="fixed inset-0 flex items-center justify-center" dangerouslySetInnerHTML={{
-      __html: `
-        <svg class="animate-spin h-10 w-10 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>`
-      }}>
-    </div>
-  )
-}
-
-const PageSuspense = ({ loader, fallback = <Loading /> }) => {
+const PageSuspense = ({ loader, fallback = <Spin /> }) => {
   return (
     <Suspense fallback={fallback}>
       {createElement(lazy(loader))}
@@ -34,6 +22,32 @@ export const router = createBrowserRouter([
         element: (
           <PageSuspense loader={() => import('../pages/Welcome.jsx')} />
         ),
+      },
+      {
+        path: "todo",
+        element: (
+          <PageSuspense loader={() => import('../pages/Todo.jsx')} />
+        ),
+        children: [
+          {
+            path: "",
+            element: (
+              <PageSuspense loader={() => import('../pages/TodoList.jsx')} />
+            ),
+          },
+          {
+            path: "edit/add",
+            element: (
+              <PageSuspense loader={() => import('../pages/TodoAdd.jsx')} />
+            ),
+          },
+          {
+            path: "edit/:id",
+            element: (
+              <PageSuspense loader={() => import('../pages/TodoEdit.jsx')} />
+            ),
+          }
+        ],
       }
     ]
   },

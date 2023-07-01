@@ -14,8 +14,7 @@ import { useAuthFetcher } from './useAuthFetcher'
 export function useUser() {
   const { data, loading, error, send } = useAuthFetcher()
   useEffect(() => {
-    const { destructor } = send('/api/user', { method: 'GET' })
-    return destructor
+    return send('/api/user', { method: 'GET' })[1]
   }, [])
   return { data, loading, error }
 }

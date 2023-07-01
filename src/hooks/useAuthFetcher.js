@@ -14,16 +14,11 @@ function resolveContent(response) {
 }
 
 /**
- * @typedef {Object} Send
- * @property {Promise<*>} promise
- * @property {() => void} destructor
- */
-/**
  * @typedef {Object} AuthFetcher
  * @property {unknown} data
  * @property {boolean} loading
  * @property {Error | null} error
- * @property {(url: string, options: RequestInit) => Send} send
+ * @property {(url: string, options: RequestInit) => [Promise<*>, () => void]} send
  */
 /** @type {() => AuthFetcher} */
 export function useAuthFetcher() {
@@ -52,11 +47,16 @@ export function useAuthFetcher() {
               addRefreshQueue({ request, resolve, reject })
               onRefreshToken()
             })
+          case 403:
+            return new Promise((resolve, reject) => {
+              addRefreshQueue({ request, resolve, reject })
+              onRefreshToken()
+            })
           default:
             return resolveContent(response).then((dto) => {
               if (ignore) throw new Error('ignore')
               setData(dto.data)
-              return response
+              return dto
             })
         }
       })
@@ -65,10 +65,7 @@ export function useAuthFetcher() {
         setError(error)
       })
       .finally(() => setLoading(false))
-    return {
-      promise,
-      destructor,
-    }
+    return [promise, destructor]
   }, [token])
   return { data, loading, error, send }
 }
