@@ -58,12 +58,15 @@ const uuid = () => Math.random().toString(16).slice(2)
 /** @type {(username: string) => TokenInfo} */
 const createTokenInfo = (username) => {
   const token = uuid()
+  const expirationAt = Date.now() + 1000 * 30
+  setTimeout(() => {
+    console.log(`${token} : expiration!!!`);
+  }, 1000 * 60 * 5)
   return {
     username,
     accessToken: token,
     refreshToken: token,
-    // 5 min
-    expirationAt: Date.now() + 1000 * 60 * 5
+    expirationAt,
   }
 }
 
@@ -161,12 +164,30 @@ app.get('/user', AuthorizationMiddleware, async (req, res) => {
 })
 
 app.get('/todos', AuthorizationMiddleware, async (req, res) => {
+  const {
+    page = '1',
+    page_size = '10',
+    sort = 'createAt',
+    order = 'asc',
+    search = '',
+  } = req.query
   const todos = await getTodos()
+  const filterData = Object.values(todos)
+    .filter(todo => todo.status)
+    .filter(todo => search ? JSON.stringify(todo).includes(search) : true)
+    .sort((a, b) => {
+      if (order === 'asc') {
+        return a[sort] > b[sort] ? 1 : -1
+      }
+      return a[sort] < b[sort] ? 1 : -1
+    })
+  const pageChunk = filterData.slice((page - 1) * page_size, page * page_size)
   res.send({
     code: 0,
-    data: Object.values(todos)
-      .filter(todo => todo.status)
-      .map(todo => {
+    page: Number(page),
+    pageSize: Number(page_size),
+    total: filterData.length,
+    data: pageChunk.map(todo => {
         const { id, title, description, status } = todo
         return { id, title, description, status }
       })

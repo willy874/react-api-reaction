@@ -77,7 +77,7 @@ function TodoEditor({ value, onChange = () => {} }, ref) {
       <div className="flex mb-2">
         <label className="w-24" htmlFor="description">Description</label>
         <div className="relative pb-6 grow">
-          <input className="w-full px-4 py-1 rounded" id="description" type="text" value={description} onInput={(e) => setDesc(e.currentTarget.value)} />
+          <input className="w-full px-4 py-1 rounded" id="description" type="text" value={description} onInput={(e) => setDescription(e.currentTarget.value)} />
           {errorMessage.description && <div className="absolute bottom-0 left-0 text-red-500">{errorMessage.description}</div>}
         </div>
       </div>

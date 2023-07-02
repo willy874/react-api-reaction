@@ -17,7 +17,7 @@ const defaultTokenContext = {
   fetchLogin: () => {},
   /** @type {() => Promise<void>} */
   fetchLogout: () => {},
-  /** @type {() => Promise<string>} */
+  /** @type {(req: Request) => Promise<string>} */
   onRefreshToken: () => {},
   /** @type {RefreshRequest[]} */
   refreshQueue: [],
@@ -62,7 +62,6 @@ export function TokenContextProvider({ children }) {
   }, [])
   const onRefreshToken = useCallback((req) => {
     const fetchRefreshToken = (retry = 0) => {
-      storage.removeItem('token')
       fetch('/api/refresh-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': token },
@@ -72,7 +71,7 @@ export function TokenContextProvider({ children }) {
           storage.setItem('token', json.data)
           req.headers.set('Authorization', json.data)
           return Promise.all(
-            refreshQueue.map(({ request, resolve, reject }) => {
+            refreshQueue.splice(0).map(({ request, resolve, reject }) => {
               return fetch(request).then(resolve).catch(reject)
             })
           )
@@ -80,12 +79,16 @@ export function TokenContextProvider({ children }) {
         .then(() => {
           if (retry) fetchRefreshToken(retry - 1)
         })
+        .catch(() => {
+          storage.removeItem('token')
+        })
     }
     fetchRefreshToken()
   }, [token])
   /** @type {typeof defaultTokenContext} */
   const value = useMemo(() => ({
     token,
+    refreshQueue,
     isLogin: !!token,
     fetchLogin,
     fetchLogout,

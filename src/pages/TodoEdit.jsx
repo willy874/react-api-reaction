@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useParams } from "react-router-dom";
 import { useTodoContext } from '../contexts'
-import { useTodo } from '../hooks'
+import { useTodoById } from '../hooks'
 import TodoEditor from '../components/TodoEditor'
 /** @typedef {import('../components/TodoEditor').TodoEditorRef} TodoEditorRef */
 
@@ -12,26 +12,20 @@ export default function TodoEditPage() {
   const [form, setForm] = useState(null)
   const { editTodo } = useTodoContext()
   const navigate = useNavigate()
-  const { data ,fetcher } = useTodo()
+  const { data } = useTodoById(id)
   const onSubmit = (e) => {
     e.preventDefault()
     if (formRef.current?.validation()) {
-      editTodo(form)
+      editTodo(id, form)
         .then(() => navigate('/todo'))
     }
   }
   useEffect(() => {
-    if (id) {
-      const [promise, destructor] = fetcher(id)
-      promise.then((response) => {
-        if (response) {
-          const { title, description, status } = response.data
-          setForm({ title, description, status })
-        }
-      })
-      return destructor
+    if (data) {
+      const { title, description, status } = data.data
+      setForm({ title, description, status })
     }
-  }, [id])
+  }, [data])
   return (
     <div className="flex justify-center py-4">
       <div className="w-5/6">

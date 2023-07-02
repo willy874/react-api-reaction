@@ -1,3 +1,3 @@
 export { useAuthFetcher } from './useAuthFetcher'
 export { useUser } from './useUser'
-export { useTodo } from './useTodo'
+export { useTodo, useTodoById } from './useTodo'

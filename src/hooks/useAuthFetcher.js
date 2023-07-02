@@ -22,7 +22,7 @@ function resolveContent(response) {
  */
 /** @type {() => AuthFetcher} */
 export function useAuthFetcher() {
-  const { token, addRefreshQueue, onRefreshToken } = useTokenContext()
+  const { token, refreshQueue, addRefreshQueue, onRefreshToken } = useTokenContext()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -41,24 +41,32 @@ export function useAuthFetcher() {
     const promise = fetcher
       .send()
       .then(([request, response]) => {
+        if (ignore) return
         switch (response.status) {
           case 401:
             return new Promise((resolve, reject) => {
+              if (refreshQueue.length === 0) {
+                onRefreshToken(request)
+              }
               addRefreshQueue({ request, resolve, reject })
-              onRefreshToken()
             })
           case 403:
             return new Promise((resolve, reject) => {
+              if (refreshQueue.length === 0) {
+                onRefreshToken(request)
+              }
               addRefreshQueue({ request, resolve, reject })
-              onRefreshToken()
             })
           default:
-            return resolveContent(response).then((dto) => {
-              if (ignore) throw new Error('ignore')
-              setData(dto.data)
-              return dto
-            })
+            return Promise.resolve(response)
         }
+      })
+      .then((response) => {
+        return resolveContent(response).then((dto) => {
+          if (ignore) throw new Error('ignore')
+          setData(dto)
+          return dto
+        })
       })
       .catch((error) => {
         if (ignore) return

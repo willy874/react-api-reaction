@@ -9,7 +9,7 @@ const defaultTodoContext = {
   setTodos: () => {},
   /** @type {(todo: Todo) => Promise<void>}*/
   addTodo: () => {},
-  /** @type {(todo: Todo) => Promise<void>}*/
+  /** @type {(id: string, todo: Todo) => Promise<void>}*/
   editTodo: () => {},
   /** @type {(id: string) => Promise<void>}*/
   deleteTodo: () => {},
@@ -25,8 +25,8 @@ export function TodoContextProvider({ children }) {
   const addTodo = useCallback((todo) => {
     return send('/api/todos', { method: 'POST', body: JSON.stringify(todo) })[0]
   }, [])
-  const editTodo = useCallback((todo) => {
-    return send('/api/todos', { method: 'PUT', body: JSON.stringify(todo) })[0]
+  const editTodo = useCallback((id, todo) => {
+    return send(`/api/todos/${id}`, { method: 'PUT', body: JSON.stringify(todo) })[0]
   }, [])
   const deleteTodo = useCallback((id) => {
     return send(`/api/todos/${id}`, { method: 'DELETE' })[0]
