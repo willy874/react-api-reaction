@@ -255,6 +255,6 @@ app.delete('/todos/:id', AuthorizationMiddleware, async (req, res) => {
   })
 })
 
-app.listen(3100, () => {
-  console.log('app start at http://localhost:3100')
+app.listen(5174, () => {
+  console.log('app start at http://localhost:5174')
 })

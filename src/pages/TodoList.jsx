@@ -10,7 +10,15 @@ const DEFAULT_PAGE_SIZE = '10'
 const DEFAULT_SORT = 'createAt'
 const DEFAULT_SEARCH_KEYWORD = ''
 
+function useHook(){
+  const [test, setTest] = useState(0)
+  return ()=>{
+    test, setTest 
+  }
+}
+
 export default function TodoListPage() {
+  const [open, setOpen] = useState(()=>xxx());
   const [searchParams, setSearchParams] = useSearchParams()
   const [currentPage, setPage] = useState(searchParams.get('page') || DEFAULT_PAGE)
   const [pageSize, setPageSize] = useState(searchParams.get('page_size') || DEFAULT_PAGE_SIZE)

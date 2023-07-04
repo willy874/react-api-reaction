@@ -10,7 +10,7 @@ export default function TodoPage() {
   const activeCls = 'border-white cursor-auto'
   return (
     <div className="p-4">
-      <h2 className="text-3xl font-bold mb-4">Todo List</h2>
+      <h2 className="mb-4 text-3xl font-bold">Todo List</h2>
       <div className="flex -mx-2">
         <div className="px-2">
           <button

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useTokenContext } from '../contexts'
 import { useUser } from '../hooks'
@@ -14,7 +14,7 @@ function Header() {
     <header className="flex">
       <div className="grow"></div>
       <div className="px-4 py-2">
-        <button className="border rounded-lg py-2 px-4 border-zinc-500 cursor-pointer hover:bg-sky-600" onClick={onLogout}>Logout</button>
+        <button className="px-4 py-2 border rounded-lg cursor-pointer border-zinc-500 hover:bg-sky-600" onClick={onLogout}>Logout</button>
       </div>
     </header>
   );
