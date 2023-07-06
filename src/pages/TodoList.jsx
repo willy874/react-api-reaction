@@ -18,7 +18,6 @@ function useHook(){
 }
 
 export default function TodoListPage() {
-  const [open, setOpen] = useState(()=>xxx());
   const [searchParams, setSearchParams] = useSearchParams()
   const [currentPage, setPage] = useState(searchParams.get('page') || DEFAULT_PAGE)
   const [pageSize, setPageSize] = useState(searchParams.get('page_size') || DEFAULT_PAGE_SIZE)

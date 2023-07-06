@@ -53,3 +53,26 @@ npm run dev
   - React Router Redirect
   - React Router Children Route
   - React Router Params And Query
+
+### URL
+http://localhost:5173/abc/ccc/rrrr?name=bamboo&age=18&name=xxx&name=xxx#qwertyui
+
+protocol 協定
+host 網域
+port 通訊埠
+pathname 路徑
+search 查詢字串
+hash 錨點
+
+### Method
+
+- GET
+- POST
+- PUT
+- DELETE
+- PATCH
+- OPTIONS
+
+Content-Type: application/json;charset=UTF-8
+
+CORS: Cross-Origin Resource Sharing
