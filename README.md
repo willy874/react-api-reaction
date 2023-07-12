@@ -76,3 +76,6 @@ hash 錨點
 Content-Type: application/json;charset=UTF-8
 
 CORS: Cross-Origin Resource Sharing
+
+HTTP Token 使用方式: Basic Token v.s Bearer Token
+https://ithelp.ithome.com.tw/articles/10256445
